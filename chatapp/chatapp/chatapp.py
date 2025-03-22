@@ -2,38 +2,54 @@
 
 import reflex as rx
 
-from rxconfig import config
+from chatapp import style
+from chatapp.state import State
 
-
-class State(rx.State):
-    """The app state."""
-
-    ...
-
-
-def index() -> rx.Component:
-    # Welcome Page (Index)
-    return rx.container(
-        rx.color_mode.button(position="top-right"),
-        rx.vstack(
-            rx.heading("Welcome to Reflex!", size="9"),
-            rx.text(
-                "Get started by editing ",
-                rx.code(f"{config.app_name}/{config.app_name}.py"),
-                size="5",
-            ),
-            rx.link(
-                rx.button("Check out our docs!"),
-                href="https://reflex.dev/docs/getting-started/introduction/",
-                is_external=True,
-            ),
-            spacing="5",
-            justify="center",
-            min_height="85vh",
+def qa(question: str, answer: str) -> rx.Component:
+    return rx.box(
+        rx.box(
+            rx.text(question, style=style.question_style),
+            text_align="right"
         ),
-        rx.logo(),
+        rx.box(
+            rx.text(answer, style=style.answer_style),
+            text_align="left"
+        ),
+        margin_y="1em",
+        width="100%",
     )
 
+def chat() -> rx.Component:
+    return rx.box(
+        rx.foreach(
+            State.chat_history,
+            lambda messages: qa(messages[0], messages[1]),
+        )
+    )
+
+def action_bar() -> rx.Component:
+    return rx.hstack(
+        rx.input(
+            value=State.question,
+            placeholder="Ask a question",
+            on_change=State.set_question,
+            style=style.input_style,
+        ),
+        rx.button(
+            "Ask",
+            on_click=State.answer,
+            style=style.button_style,
+        ),
+    )
+
+def index() -> rx.Component:
+    return rx.center(
+        rx.vstack(
+            chat(),
+            action_bar(),
+            align="center",
+        )
+    )
 
 app = rx.App()
 app.add_page(index)
