@@ -45,6 +45,6 @@ class State(rx.State):
                 answer += item.choices[0].delta.content
                 self.chat_history[-1] = (
                     self.chat_history[-1][0],
-                    answer[:i + 1],
+                    answer,
                 )
                 yield
